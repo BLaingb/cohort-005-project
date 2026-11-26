@@ -2003,6 +2003,50 @@ This course is still in draft while the cluster examples are rewritten against t
     `Created ${countRows(schema.comments)} lesson comments across ${countRows(schema.comments, isNull(schema.comments.parentId))} threads.`
   );
 
+  // ─── Bookmarks and Notes ───
+  // Private to each Student, so only enrolled students have them. Emma
+  // (students[0]) has both across two courses, so /saved shows rows from more
+  // than one Course; Sophia (students[4]) has a single Bookmark.
+
+  db.insert(schema.bookmarks)
+    .values([
+      { userId: students[0].id, lessonId: course1LessonIds[7], createdAt: daysAgo(20) },
+      { userId: students[0].id, lessonId: course2LessonIds[2], createdAt: daysAgo(10) },
+      { userId: students[2].id, lessonId: course1LessonIds[3], createdAt: daysAgo(8) },
+      { userId: students[4].id, lessonId: course1LessonIds[1], createdAt: daysAgo(2) },
+    ])
+    .run();
+
+  db.insert(schema.notes)
+    .values([
+      {
+        userId: students[0].id,
+        lessonId: course1LessonIds[2],
+        body: "Use npx tsc, not a global install.\nKeeps the version pinned to the project.",
+        createdAt: daysAgo(30),
+        updatedAt: daysAgo(29),
+      },
+      {
+        userId: students[0].id,
+        lessonId: course2LessonIds[2],
+        body: "# Status codes to remember\n* 201 Created\n* 204 No Content\n* 409 Conflict",
+        createdAt: daysAgo(10),
+        updatedAt: daysAgo(10),
+      },
+      {
+        userId: students[2].id,
+        lessonId: course1LessonIds[7],
+        body: "Generic inference falls back to unknown on an empty array. Ask about this.",
+        createdAt: daysAgo(6),
+        updatedAt: daysAgo(5),
+      },
+    ])
+    .run();
+
+  console.log(
+    `Created ${countRows(schema.bookmarks)} bookmarks and ${countRows(schema.notes)} notes.`
+  );
+
   // ─── Lesson Progress ───
 
   // Helper to mark lessons as complete
@@ -2849,6 +2893,9 @@ This course is still in draft while the cluster examples are rewritten against t
   console.log(`  Enrollments: ${countRows(schema.enrollments)}`);
   console.log(`  Course ratings: ${countRows(schema.courseRatings)}`);
   console.log(`  Lesson comments: ${countRows(schema.comments)}`);
+  console.log(
+    `  Bookmarks: ${countRows(schema.bookmarks)}, notes: ${countRows(schema.notes)}`
+  );
   console.log(
     `  Lesson progress: ${countRows(schema.lessonProgress)} (${countRows(schema.lessonProgress, eq(schema.lessonProgress.status, LessonProgressStatus.Completed))} completed)`
   );
