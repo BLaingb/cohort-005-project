@@ -1,0 +1,14 @@
+import { z } from "zod";
+
+export const MAX_NOTE_LENGTH = 2000;
+
+// A Note body is plain text, trimmed, and refused (never truncated) when it is
+// empty or longer than the cap. Shared by the form schema and the service.
+export const noteBodySchema = z
+  .string()
+  .trim()
+  .min(1, "Write something before saving your note.")
+  .max(
+    MAX_NOTE_LENGTH,
+    `A note can be at most ${MAX_NOTE_LENGTH.toLocaleString("en-US")} characters.`
+  );
